@@ -1,9 +1,11 @@
 package com.be.controller;
 
-import com.be.dto.RegisterDTO;
+import com.be.dto.AuthDTO;
 import com.be.payload.ApiResponse;
-import com.be.payload.RegisterResponse;
+import com.be.payload.AuthResponse;
+import com.be.payload.LoginResponse;
 import com.be.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(@RequestBody RegisterDTO register) {
+    public ResponseEntity<ApiResponse<AuthResponse>> register(@RequestBody AuthDTO register) {
 
         return ResponseEntity.ok(ApiResponse.success("Register successfully", authService.register(register)));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody AuthDTO login, HttpServletResponse response) {
+
+        return ResponseEntity.ok(ApiResponse.success("Login successfully", authService.login(login, response)));
     }
 }
