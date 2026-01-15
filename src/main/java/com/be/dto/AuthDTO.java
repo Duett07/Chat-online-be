@@ -3,7 +3,7 @@ package com.be.dto;
 import lombok.Data;
 
 @Data
-public class RegisterDTO {
+public class AuthDTO {
     private String username;
     private String password;
 }
