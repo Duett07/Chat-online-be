@@ -54,6 +54,7 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> claims, User user) {
+        claims.put("id", user.getId());
         claims.put("username", user.getUsername());
         return Jwts.builder().setClaims(claims).setSubject(String.valueOf(user.getUsername())).setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + expAccessToken)).signWith(getSigningKey(), SignatureAlgorithm.HS256).compact();
     }
@@ -75,6 +76,20 @@ public class JwtService {
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String getUserId(String token) {
+        Claims claims = extractAllClaim(token);
+        return claims.get("id", String.class);
+    }
+
+    public Boolean validate(String token) {
+        try {
+            extractAllClaim(token);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
     }
 
 }
