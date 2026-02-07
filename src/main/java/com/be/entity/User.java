@@ -1,11 +1,10 @@
 package com.be.entity;
 
 import com.be.enums.UserStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -18,4 +17,19 @@ public class User extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+
+    @OneToMany(mappedBy = "user1")
+    private List<Conversations> conversationsAsUser1;
+
+    @OneToMany(mappedBy = "user2")
+    private List<Conversations> conversationsAsUser2;
+
+    @OneToMany(mappedBy = "sender")
+    private List<Messages> messageSend;
+
+    @OneToMany(mappedBy = "receiver")
+    private List<Messages> messageReceive;
+
+    private String image;
+
 }

@@ -14,6 +14,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @AllArgsConstructor
@@ -45,7 +46,8 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             return false;
         }
 
-        String userId = jwtService.getUserId(token);
+        String userIdStr = jwtService.getUserId(token);
+        UUID userId = UUID.fromString(userIdStr);
         attributes.put("userId", userId);
 
         return true;
