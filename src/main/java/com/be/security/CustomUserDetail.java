@@ -8,11 +8,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 @AllArgsConstructor
 public class CustomUserDetail implements UserDetails {
 
     private final User user;
+    private final UUID id;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -51,5 +53,9 @@ public class CustomUserDetail implements UserDetails {
 
     public User getUser() {
         return this.user;
+    }
+
+    public UUID getId() {
+        return this.id;
     }
 }

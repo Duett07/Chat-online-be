@@ -1,17 +1,29 @@
 package com.be.ws;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@RequiredArgsConstructor
 public class ChatWebSocketHandler extends TextWebSocketHandler {
+    private final WebSocketSessionManager webSocketSessionManager;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
-        String userId = (String) session.getAttributes().get("userId");
+        UUID userId = (UUID) session.getAttributes().get("userId");
+        webSocketSessionManager.add(userId, session);
+        System.out.println("User online: " + userId);
     }
 
     @Override
@@ -20,6 +32,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        String userId = (String) session.getAttributes().get("userId");
+        UUID userId = (UUID) session.getAttributes().get("userId");
+        webSocketSessionManager.remove(userId);
+        System.out.println("User offline: " + userId);
     }
+
 }

@@ -6,18 +6,22 @@ import com.be.payload.AccountResponse;
 import com.be.payload.AuthResponse;
 import com.be.payload.LoginResponse;
 import com.be.repository.IUserRepository;
+import com.be.security.CustomUserDetail;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +47,7 @@ public class AuthService {
 
         User user = new User();
         user.setUsername(register.getUsername());
+        user.setDisplayName(register.getUsername());
         user.setPassword(passwordEncoder.encode(register.getPassword()));
 
         this.userRepository.save(user);
@@ -79,4 +84,19 @@ public class AuthService {
 
         return new LoginResponse(account,  accessToken, expiresAt);
     }
+
+    public UUID getCurrentUserId() {
+        Authentication auth =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new RuntimeException("Unauthenticated");
+        }
+
+        CustomUserDetail user =
+                (CustomUserDetail) auth.getPrincipal();
+
+        return user.getId();
+    }
+
 }
