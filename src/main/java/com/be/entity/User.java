@@ -1,9 +1,11 @@
 package com.be.entity;
 
+import com.be.enums.GenderStatus;
 import com.be.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -31,5 +33,7 @@ public class User extends BaseEntity{
     private List<Messages> messageReceive;
 
     private String image;
-
+    @Enumerated(EnumType.STRING)
+    private GenderStatus gender;
+    private LocalDate dateOfBirth;
 }
