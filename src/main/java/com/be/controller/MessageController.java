@@ -1,10 +1,7 @@
 package com.be.controller;
 
 import com.be.dto.SendMessagesRequest;
-import com.be.payload.ApiResponse;
-import com.be.payload.MessageResponse;
-import com.be.payload.MessagesRes;
-import com.be.payload.ConversationResponse;
+import com.be.payload.*;
 import com.be.service.MessagesService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +24,11 @@ public class MessageController {
     @GetMapping("/with/{userId}")
     public ResponseEntity<ApiResponse<List<MessagesRes>>> getMessages(@PathVariable UUID userId){
         return ResponseEntity.ok(ApiResponse.success("Get all messages successfully", messagesService.getAllMessages(userId)));
+    }
+
+    @PutMapping("/delete/{messageId}")
+    public ResponseEntity<ApiResponse<MessageDeleteRes>> deleteMessage(@PathVariable UUID messageId){
+
+        return ResponseEntity.ok(ApiResponse.success("Delete message successfully", messagesService.deleteMessages(messageId)));
     }
 }

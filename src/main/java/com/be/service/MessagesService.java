@@ -88,8 +88,18 @@ public class MessagesService {
           messages.getReceiver().getId(),
           messages.getContent(),
           messages.getDisplayOrder(),
-          messages.getCreatedAt()
+          messages.getCreatedAt(),
+          messages.isDeleted()
         );
+    }
+
+    public MessageDeleteRes deleteMessages(UUID messageId) {
+        Messages message = messagesRepository.findById(messageId).orElseThrow(() -> new RuntimeException("Message not found"));
+
+        message.setDeleted(true);
+        messagesRepository.save(message);
+
+        return new MessageDeleteRes(message.getId(), message.getUpdatedAt(),  message.isDeleted());
     }
 
 }
