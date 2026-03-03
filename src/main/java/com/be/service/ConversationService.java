@@ -54,7 +54,7 @@ public class ConversationService {
                         partner.getImage()
                 ),
                 new LastMessageResponse(lastMessage.getContent(),
-                        lastMessage.getCreatedAt(), lastMessage.getSender().getId())
+                        lastMessage.getCreatedAt(), lastMessage.getSender().getId(), lastMessage.isDeleted())
         );
     }
 }

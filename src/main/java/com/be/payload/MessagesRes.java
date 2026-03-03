@@ -18,4 +18,5 @@ public class MessagesRes {
     private String content;
     private long displayOrder;
     private LocalDateTime createdAt;
+    private boolean isDeleted;
 }
