@@ -19,6 +19,8 @@ public class MessageResponse {
     private UUID senderId;
     private UUID receiverId;
     private String content;
+    private String senderName;
+    private String receiverName;
     private long displayOrder;
     @Enumerated(EnumType.STRING)
     private MessagesStatus status;
