@@ -13,8 +13,8 @@ import java.util.UUID;
 @Repository
 public interface IConversationsRepository extends JpaRepository<Conversations, UUID> {
 
-    @Query("SELECT c FROM Conversations c WHERE (c.user1 = : u1 AND c.user2 = :u2) OR (c.user1 = :u2 AND c.user2 = :u1)")
-    Optional<Conversations> findBetween(User u1, User u2);
+    @Query("SELECT c FROM Conversations c WHERE (c.user1 = :u1 AND c.user2 = :u2) OR (c.user1 = :u2 AND c.user2 = :u1)")
+    Optional<Conversations> findConversation(User u1, User u2);
 
     @Query("SELECT c FROM Conversations c WHERE c.user1.id = :userId OR c.user2.id = :userId")
     List<Conversations> findAllByUser(UUID userId);

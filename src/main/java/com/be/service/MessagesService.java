@@ -8,6 +8,7 @@ import com.be.enums.MessagesStatus;
 import com.be.enums.UserStatus;
 import com.be.payload.*;
 import com.be.repository.IConversationsRepository;
+import com.be.repository.IMessageStatusRepository;
 import com.be.repository.IMessagesRepository;
 import com.be.repository.IUserRepository;
 import lombok.AllArgsConstructor;
@@ -26,11 +27,18 @@ public class MessagesService {
     private final IMessagesRepository messagesRepository;
     private final AuthService authService;
     private final WebSocketService webSocketService;
+    private final IMessageStatusRepository messageStatusRepository;
 
     private Conversations getOrCreateConversation(UUID u1, UUID u2){
+        if (u1.compareTo(u2) > 0) {
+            UUID temp = u1;
+            u1 = u2;
+            u2 = temp;
+        }
+
         User user1 = userRepository.findById(u1).orElseThrow(() -> new RuntimeException("User1 not found"));
         User user2 = userRepository.findById(u2).orElseThrow(() -> new RuntimeException("User2 not found"));
-        return conversationsRepository.findBetween(user1, user2)
+        return conversationsRepository.findConversation(user1, user2)
                 .orElseGet(() -> {
                     Conversations conversations = new Conversations();
                     conversations.setUser1(user1);
@@ -56,8 +64,13 @@ public class MessagesService {
 
         messagesRepository.save(message);
 
+        com.be.entity.MessagesStatus status = new com.be.entity.MessagesStatus();
+        status.setMessages(message);
+        status.setStatus(MessagesStatus.SENT);
 
-        MessageResponse response = new MessageResponse(message.getId(), conversation.getId(), senderId, userReceiver.getId(), message.getContent(), message.getDisplayOrder(), MessagesStatus.SENT, message.getCreatedAt());
+        messageStatusRepository.save(status);
+
+        MessageResponse response = new MessageResponse(message.getId(), conversation.getId(), senderId, userReceiver.getId(), message.getContent(), userSender.getDisplayName(), userReceiver.getDisplayName(), message.getDisplayOrder(), MessagesStatus.SENT, message.getCreatedAt());
 
         Map<String, Object> payload = Map.of(
                 "type", "MESSAGE",
@@ -65,7 +78,7 @@ public class MessagesService {
         );
 
         webSocketService.sendToUser(request.receiverId(), payload);
-
+        webSocketService.sendToUser(senderId, payload);
 
         return response;
     }
