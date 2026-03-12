@@ -16,6 +16,6 @@ public interface IConversationsRepository extends JpaRepository<Conversations, U
     @Query("SELECT c FROM Conversations c WHERE (c.user1 = :u1 AND c.user2 = :u2) OR (c.user1 = :u2 AND c.user2 = :u1)")
     Optional<Conversations> findConversation(User u1, User u2);
 
-    @Query("SELECT c FROM Conversations c WHERE c.user1.id = :userId OR c.user2.id = :userId")
+    @Query("SELECT c FROM Conversations c WHERE (c.user1.id = :userId AND c.deleteAtUser1 IS NULL) OR (c.user2.id = :userId AND c.deleteAtUser2 IS NULL) ORDER BY c.updatedAt DESC")
     List<Conversations> findAllByUser(UUID userId);
 }

@@ -14,6 +14,7 @@ import com.be.repository.IUserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,14 @@ public class MessagesService {
 
         messageStatusRepository.save(status);
 
+//        if (conversation.getUser1().getId().equals(senderId)) {
+//            conversation.setDeleteAtUser1(null);
+//        } else {
+//            conversation.setDeleteAtUser2(null);
+//        }
+//
+//        conversationsRepository.save(conversation);
+
         MessageResponse response = new MessageResponse(message.getId(), conversation.getId(), senderId, userReceiver.getId(), message.getContent(), userSender.getDisplayName(), userReceiver.getDisplayName(), message.getDisplayOrder(), MessagesStatus.SENT, message.getCreatedAt());
 
         Map<String, Object> payload = Map.of(
@@ -88,7 +97,21 @@ public class MessagesService {
 
         Conversations conversation = getOrCreateConversation(currentUserId, otherUserId);
 
-        List<Messages> messages = messagesRepository.findAllByConversations(conversation.getId());
+        LocalDateTime deleteAt;
+
+        if (conversation.getUser1().getId().equals(currentUserId)) {
+            deleteAt = conversation.getDeleteAtUser1();
+        } else  {
+            deleteAt = conversation.getDeleteAtUser2();
+        }
+
+        List<Messages> messages;
+
+        if (deleteAt == null) {
+            messages =  messagesRepository.findAllByConversations(conversation.getId());
+        } else {
+            messages = messagesRepository.findAllAfterTime(conversation.getId(), deleteAt);
+        }
 
         return messages.stream()
                 .map(this::toResponse).toList();

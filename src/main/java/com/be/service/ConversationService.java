@@ -3,6 +3,7 @@ package com.be.service;
 import com.be.entity.Conversations;
 import com.be.entity.Messages;
 import com.be.entity.User;
+import com.be.payload.ConversationDeleteRes;
 import com.be.payload.ConversationResponse;
 import com.be.payload.LastMessageResponse;
 import com.be.payload.PartnerResponse;
@@ -11,6 +12,7 @@ import com.be.repository.IMessagesRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -56,5 +58,20 @@ public class ConversationService {
                 new LastMessageResponse(lastMessage.getContent(),
                         lastMessage.getCreatedAt(), lastMessage.getSender().getId(), lastMessage.isDeleted())
         );
+    }
+
+    public ConversationDeleteRes deleteConversations(UUID conversationId) {
+        UUID userId =  authService.getCurrentUserId();
+
+        Conversations conversation = conversationsRepository.findById(conversationId).orElseThrow(() -> new RuntimeException("conversation not found"));
+
+        if (conversation.getUser1().getId().equals(userId)) {
+            conversation.setDeleteAtUser1(LocalDateTime.now());
+        } else {
+            conversation.setDeleteAtUser2(LocalDateTime.now());
+        }
+        conversationsRepository.save(conversation);
+
+        return new ConversationDeleteRes(conversationId, conversation.getUser1().getId(), conversation.getUser2().getId(), conversation.getDeleteAtUser1(), conversation.getDeleteAtUser2());
     }
 }
