@@ -2,7 +2,9 @@ package com.be.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -18,8 +20,9 @@ public class Conversations extends BaseEntity{
     @JoinColumn(name = "user2_id")
     private User user2;
 
-    private String title;
-
     @OneToMany(mappedBy = "conversations")
     private List<Messages> messages;
+
+    private LocalDateTime deleteAtUser1;
+    private LocalDateTime deleteAtUser2;
 }
