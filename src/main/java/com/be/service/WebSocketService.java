@@ -8,6 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -16,17 +17,21 @@ public class WebSocketService {
     private final ObjectMapper objectMapper;
 
     public void sendToUser(UUID userId, Object payload) {
-        WebSocketSession session = webSocketSessionManager.get(userId);
-        System.out.println("WS send to " + userId + " session = " + session);
-        if(session == null || !session.isOpen()){
+        Set<WebSocketSession> userSessions = webSocketSessionManager.get(userId);
+        System.out.println("WS send to " + userId + " sessions = " + userSessions);
+        if(userSessions == null || userSessions.isEmpty()){
             System.out.println("❌ No WS session for user " + userId);
             return;
         }
 
-        try {
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsString(payload)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        userSessions.forEach(session -> {
+            if (session.isOpen()) {
+                try {
+                    session.sendMessage(new TextMessage(objectMapper.writeValueAsString(payload)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

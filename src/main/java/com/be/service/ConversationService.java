@@ -47,12 +47,14 @@ public class ConversationService {
             return null;
         }
 
+        boolean isOnline = com.be.enums.UserStatus.Online.equals(partner.getStatus());
+
         return new ConversationResponse(
                 conversations.getId(),
                 new PartnerResponse(
                         partner.getId(),
                         partner.getDisplayName(),
-                        false,
+                        isOnline,
                         partner.getImage()
                 ),
                 new LastMessageResponse(lastMessage.getContent(),

@@ -26,8 +26,5 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(chatWebSocketHandler, "/ws").addInterceptors(jwtHandshakeInterceptor).setAllowedOrigins("http://localhost:3000");
     }
 
-    @Bean
-    public WebSocketHandler chatHandler() {
-        return new ChatWebSocketHandler(webSocketSessionManager);
-    }
+
 }

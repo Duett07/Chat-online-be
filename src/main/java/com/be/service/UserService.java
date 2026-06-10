@@ -31,7 +31,12 @@ public class UserService {
         UUID userId = authService.getCurrentUserId();
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("user not found"));
-        if(data.displayName() != null && !data.displayName().isEmpty()){
+
+        boolean checkName = userRepository.existsByDisplayName(data.displayName());
+
+        if (checkName) {
+            throw new RuntimeException("Tên người dùng đã tồn tại");
+        }else if(data.displayName() != null && !data.displayName().isEmpty()){
             user.setDisplayName(data.displayName());
         }
 
@@ -74,6 +79,7 @@ public class UserService {
     public UserRes getUser(UUID id) {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("user not found"));
 
-        return new UserRes(user.getDisplayName(), false, user.getImage());
+        boolean isOnline = com.be.enums.UserStatus.Online.equals(user.getStatus());
+        return new UserRes(user.getDisplayName(), isOnline, user.getImage());
     }
 }

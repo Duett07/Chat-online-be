@@ -19,6 +19,8 @@ public interface IUserRepository extends JpaRepository<User, UUID> {
 
     List<User> findByDisplayName(String displayName);
 
+    boolean existsByDisplayName(String displayName);
+
 //    @Query("SELECT u FROM User u WHERE u.id <> :currentUserId")
 //    List<User> findAllExcept(UUID currentUserId);
 }
