@@ -135,7 +135,17 @@ public class MessagesService {
         message.setDeleted(true);
         messagesRepository.save(message);
 
-        return new MessageDeleteRes(message.getId(), message.getUpdatedAt(),  message.isDeleted());
+        MessageDeleteRes response = new MessageDeleteRes(message.getId(), message.getUpdatedAt(),  message.isDeleted());
+
+        Map<String, Object> payload = Map.of(
+                "type", "DELETE_MESSAGE",
+                "data", response
+        );
+
+        webSocketService.sendToUser(message.getReceiver().getId(), payload);
+        webSocketService.sendToUser(message.getSender().getId(), payload);
+
+        return response;
     }
 
 }
